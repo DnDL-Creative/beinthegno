@@ -1,0 +1,15 @@
+/* ═══════════════════════════════════════════════════════════════════
+   CollectionForm — collection-specific overrides.
+   Most chrome comes from ../admin-form.module.css; this file holds the
+   few bits unique to the collection editor.
+   ═══════════════════════════════════════════════════════════════════ */
+
+.tagline {
+  font-family: var(--font-body);
+  font-size: var(--text-sm);
+  font-weight: var(--tagline-font-weight);
+  letter-spacing: var(--tagline-letter-spacing);
+  text-transform: lowercase;
+  color: var(--tagline-color);
+  margin-top: var(--space-1);
+}

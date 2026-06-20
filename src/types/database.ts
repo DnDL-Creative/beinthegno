@@ -1,13 +1,7 @@
 /* ═══════════════════════════════════════════════════════════════════
-   Supabase Database Types (Placeholder)
-   All intheGno tables use the `itg_` prefix.
-   Run `npx supabase gen types typescript` once the project is
-   connected to generate real types from your schema.
-
-   Future integration points:
-   - Shopify Storefront API (product sync → itg_products)
-   - Stripe (subscription/wholesale → itg_subscriptions)
-   - Cloudflare Images (asset URLs stored in rows)
+   Supabase Database Types
+   All intheGno tables use the `itg_` prefix (shared DnDL project).
+   Schema source of truth: sql/itg_commerce.sql + sql/create_itg_posts.sql
    ═══════════════════════════════════════════════════════════════════ */
 
 export type Json =
@@ -18,138 +12,123 @@ export type Json =
   | { [key: string]: Json | undefined }
   | Json[];
 
-export type Database = {
-  public: {
-    Tables: {
-      itg_posts: {
-        Row: {
-          id: string;
-          slug: string;
-          title: string;
-          excerpt: string;
-          content: string;
-          content_markdown: string | null;
-          category: string;
-          tags: string[];
-          featured_image: string | null;
-          featured_image_alt: string | null;
-          author_id: string;
-          published: boolean;
-          published_at: string | null;
-          created_at: string;
-          updated_at: string;
-          reading_time_minutes: number | null;
-          seo_title: string | null;
-          seo_description: string | null;
-          /** Product handle for CTA block (links to Shopify product) */
-          cta_product_handle: string | null;
-        };
-        Insert: {
-          id?: string;
-          slug: string;
-          title: string;
-          excerpt: string;
-          content: string;
-          content_markdown?: string | null;
-          category: string;
-          tags?: string[];
-          featured_image?: string | null;
-          featured_image_alt?: string | null;
-          author_id: string;
-          published?: boolean;
-          published_at?: string | null;
-          reading_time_minutes?: number | null;
-          seo_title?: string | null;
-          seo_description?: string | null;
-          cta_product_handle?: string | null;
-        };
-        Update: {
-          slug?: string;
-          title?: string;
-          excerpt?: string;
-          content?: string;
-          content_markdown?: string | null;
-          category?: string;
-          tags?: string[];
-          featured_image?: string | null;
-          featured_image_alt?: string | null;
-          published?: boolean;
-          published_at?: string | null;
-          reading_time_minutes?: number | null;
-          seo_title?: string | null;
-          seo_description?: string | null;
-          cta_product_handle?: string | null;
-          updated_at?: string;
-        };
-      };
-      itg_profiles: {
-        Row: {
-          id: string;
-          email: string;
-          display_name: string | null;
-          avatar_url: string | null;
-          role: "admin" | "editor" | "reader";
-          created_at: string;
-          updated_at: string;
-        };
-        Insert: {
-          id: string;
-          email: string;
-          display_name?: string | null;
-          avatar_url?: string | null;
-          role?: "admin" | "editor" | "reader";
-        };
-        Update: {
-          display_name?: string | null;
-          avatar_url?: string | null;
-          role?: "admin" | "editor" | "reader";
-          updated_at?: string;
-        };
-      };
-      /** Future: Synced from Shopify Storefront API */
-      itg_products: {
-        Row: {
-          id: string;
-          shopify_id: string;
-          handle: string;
-          title: string;
-          description: string | null;
-          price: string;
-          compare_at_price: string | null;
-          currency: string;
-          image_url: string | null;
-          available: boolean;
-          synced_at: string;
-          created_at: string;
-        };
-        Insert: {
-          id?: string;
-          shopify_id: string;
-          handle: string;
-          title: string;
-          description?: string | null;
-          price: string;
-          compare_at_price?: string | null;
-          currency?: string;
-          image_url?: string | null;
-          available?: boolean;
-          synced_at?: string;
-        };
-        Update: {
-          title?: string;
-          description?: string | null;
-          price?: string;
-          compare_at_price?: string | null;
-          image_url?: string | null;
-          available?: boolean;
-          synced_at?: string;
-        };
-      };
-    };
-    Views: Record<string, never>;
-    Functions: Record<string, never>;
-    Enums: {
-      user_role: "admin" | "editor" | "reader";
-    };
-  };
+/* ── ROW SHAPES ──────────────────────────────────────────────────── */
+
+export type ItgCollectionRow = {
+  id: string;
+  slug: string;
+  title: string;
+  nav_label: string;
+  tagline: string;
+  description: string;
+  kind: "physical" | "digital" | "mixed";
+  badge: string;
+  sort_order: number;
+  show_in_nav: boolean;
+  published: boolean;
+  seo_title: string;
+  seo_description: string;
+  created_at: string;
+  updated_at: string;
+};
+
+export type ItgProductRow = {
+  id: string;
+  handle: string;
+  collection_id: string | null;
+  title: string;
+  subtitle: string;
+  description_html: string;
+  product_type: "physical" | "digital" | "service" | "bundle" | "other";
+  status: "draft" | "active" | "archived";
+  badge: string;
+  price: number;
+  compare_at_price: number | null;
+  currency: string;
+  images: Json;
+  options: Json;
+  features: Json;
+  shopify_product_handle: string;
+  shopify_variant_gid: string;
+  shopify_variant_map: Json;
+  requires_shipping: boolean;
+  featured: boolean;
+  sort_order: number;
+  seo_title: string;
+  seo_description: string;
+  metadata: Json;
+  created_at: string;
+  updated_at: string;
+};
+
+export type ItgProductAssetRow = {
+  id: string;
+  product_id: string;
+  kind: "audio" | "text" | "pdf" | "video" | "archive" | "image" | "other";
+  label: string;
+  r2_key: string;
+  file_name: string;
+  content_type: string;
+  size_bytes: number;
+  duration_seconds: number | null;
+  is_preview: boolean;
+  sort_order: number;
+  created_at: string;
+};
+
+export type ItgOrderRow = {
+  id: string;
+  email: string;
+  stripe_session_id: string;
+  stripe_payment_intent: string;
+  amount_total: number;
+  currency: string;
+  status: "pending" | "paid" | "refunded" | "failed";
+  download_token: string;
+  download_count: number;
+  expires_at: string | null;
+  created_at: string;
+  updated_at: string;
+};
+
+export type ItgOrderItemRow = {
+  id: string;
+  order_id: string;
+  product_id: string | null;
+  title: string;
+  unit_amount: number;
+  quantity: number;
+};
+
+export type ItgAdminRow = {
+  user_id: string;
+  email: string;
+  created_at: string;
+};
+
+export type ItgSubscriberRow = {
+  id: string;
+  email: string;
+  status: "subscribed" | "unsubscribed";
+  source: string;
+  resend_contact_id: string;
+  confirmed: boolean;
+  created_at: string;
+  updated_at: string;
+};
+
+export type ItgPostRow = {
+  id: number;
+  title: string;
+  slug: string;
+  date: string;
+  author: string;
+  tag: string;
+  content: Json;
+  image: string;
+  image_caption: string;
+  music_embed: string;
+  blogcast_url: string;
+  published: boolean;
+  created_at: string;
 };

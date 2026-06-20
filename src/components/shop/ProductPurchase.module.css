@@ -1,0 +1,138 @@
+/* ═══════════════════════════════════════════════════════════════════
+   ProductPurchase — option pills + buy button. Pill / button styles
+   copied from the original apparel module so the look is identical.
+   ═══════════════════════════════════════════════════════════════════ */
+
+.purchase {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-4);
+}
+
+/* ── OPTIONS (Size / Color / …) ──────────────────────────────────── */
+
+.optionGroup {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-2);
+}
+
+.optionLabel {
+  font-family: var(--font-body);
+  font-size: var(--text-xs);
+  font-weight: 400;
+  letter-spacing: 0.06em;
+  text-transform: uppercase;
+  color: var(--tagline-color);
+}
+
+.options {
+  display: flex;
+  gap: var(--space-2);
+  flex-wrap: wrap;
+}
+
+.optionBtn {
+  font-family: var(--font-body);
+  font-size: var(--text-xs);
+  font-weight: 400;
+  letter-spacing: 0.02em;
+  color: var(--foreground);
+  background: transparent;
+  border: 1px solid var(--border);
+  padding: var(--space-2) var(--space-3);
+  border-radius: var(--radius-sm);
+  cursor: pointer;
+  transition:
+    border-color var(--duration-fast) var(--ease-out),
+    color var(--duration-fast) var(--ease-out);
+}
+
+.optionBtn:hover {
+  border-color: var(--pipe-color);
+  color: var(--pipe-color);
+}
+
+.optionBtn[aria-pressed="true"] {
+  border-color: var(--pipe-color);
+  color: var(--pipe-color);
+  background: hsla(25, 75%, 47%, 0.06);
+}
+
+/* ── ADD TO CART / BUY ────────────────────────────────────────────── */
+
+.addToCart {
+  font-family: var(--font-body);
+  font-size: var(--text-sm);
+  font-weight: 400;
+  letter-spacing: 0.04em;
+  text-transform: lowercase;
+  color: var(--cookie-btn-color);
+  background: var(--pipe-color);
+  border: 1px solid var(--pipe-color);
+  padding: var(--space-3) var(--space-6);
+  border-radius: var(--radius-sm);
+  cursor: pointer;
+  transition:
+    background var(--duration-normal) var(--ease-out),
+    border-color var(--duration-normal) var(--ease-out);
+  width: 100%;
+}
+
+.addToCart:hover {
+  background: var(--cookie-btn-bg-hover);
+  border-color: var(--cookie-btn-bg-hover);
+}
+
+.addToCart:disabled {
+  opacity: 0.4;
+  cursor: not-allowed;
+}
+
+/* ── COMING SOON (copper pipe frame, non-interactive) ────────────── */
+
+.comingSoonFrame {
+  align-self: center;
+  margin: var(--space-2) auto 0;
+}
+
+.comingSoonLabel {
+  display: block;
+  padding: 14px 52px;
+  font-family: var(--font-body);
+  font-size: var(--text-lg);
+  font-weight: 300;
+  letter-spacing: 0.06em;
+  text-transform: lowercase;
+  color: var(--pipe-color);
+  text-align: center;
+  white-space: nowrap;
+}
+
+/* ── FEEDBACK ────────────────────────────────────────────────────── */
+
+.added {
+  font-family: var(--font-body);
+  font-size: var(--text-sm);
+  font-weight: var(--tagline-font-weight);
+  color: var(--pipe-color);
+  letter-spacing: 0.02em;
+}
+
+.cartLink {
+  color: var(--pipe-color);
+  text-decoration: underline;
+  text-underline-offset: 2px;
+}
+
+.cartLink:hover {
+  color: var(--nav-color-hover);
+}
+
+.error {
+  font-family: var(--font-body);
+  font-size: var(--text-sm);
+  font-weight: var(--tagline-font-weight);
+  color: var(--color-ember);
+  letter-spacing: 0.02em;
+}

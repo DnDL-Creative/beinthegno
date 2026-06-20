@@ -1,0 +1,253 @@
+/* ═══════════════════════════════════════════════════════════════════
+   Admin Dashboard — counts, integration status, cheat-sheet.
+   Utilitarian on-brand: vellum surfaces, copper accents, mono for meta.
+   ═══════════════════════════════════════════════════════════════════ */
+
+.main {
+  max-width: 960px;
+  margin: 0 auto;
+  padding: var(--space-8) var(--space-6);
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-10);
+}
+
+.header {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-1);
+}
+
+.title {
+  font-family: var(--title-font);
+  font-weight: var(--title-weight);
+  letter-spacing: var(--title-tracking);
+  color: var(--title-color);
+  font-size: var(--text-2xl);
+  margin: 0;
+}
+
+.accent {
+  color: var(--title-accent-color);
+}
+
+.subtitle {
+  font-family: var(--font-body);
+  font-size: var(--text-base);
+  font-weight: var(--tagline-font-weight);
+  letter-spacing: var(--tagline-letter-spacing);
+  text-transform: lowercase;
+  color: var(--tagline-color);
+}
+
+.sectionLabel {
+  font-family: var(--font-body);
+  font-size: var(--text-xs);
+  font-weight: 400;
+  letter-spacing: var(--tracking-label);
+  text-transform: uppercase;
+  color: var(--color-oxidized-copper);
+  margin-bottom: var(--space-4);
+}
+
+/* ── STAT CARDS ──────────────────────────────────────────────────── */
+
+.stats {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(150px, 1fr));
+  gap: var(--space-4);
+}
+
+.stat {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-1);
+  background: var(--surface-elevated);
+  border: 1px solid var(--border);
+  border-radius: var(--radius-md);
+  padding: var(--space-4) var(--space-5);
+}
+
+.statValue {
+  font-family: var(--font-mono);
+  font-size: var(--text-3xl);
+  font-weight: 500;
+  color: var(--title-color);
+  line-height: 1.1;
+}
+
+.statLabel {
+  font-family: var(--font-body);
+  font-size: var(--text-xs);
+  font-weight: 400;
+  letter-spacing: 0.04em;
+  text-transform: lowercase;
+  color: var(--tagline-color);
+}
+
+.statSub {
+  font-family: var(--font-mono);
+  font-size: var(--text-xs);
+  color: var(--color-earth-light);
+}
+
+/* ── INTEGRATION STATUS ──────────────────────────────────────────── */
+
+.integrations {
+  display: flex;
+  flex-direction: column;
+  border: 1px solid var(--border);
+  border-radius: var(--radius-md);
+  background: var(--surface-elevated);
+  overflow: hidden;
+}
+
+.integration {
+  display: grid;
+  grid-template-columns: 14px 140px 1fr;
+  align-items: center;
+  gap: var(--space-3);
+  padding: var(--space-3) var(--space-5);
+  border-bottom: 1px solid var(--border);
+}
+
+.integration:last-child {
+  border-bottom: none;
+}
+
+.dot {
+  width: 9px;
+  height: 9px;
+  border-radius: var(--radius-full);
+  justify-self: center;
+}
+
+.dotLive {
+  background: var(--pipe-color);
+  box-shadow: 0 0 6px hsla(25, 75%, 47%, 0.5);
+}
+
+.dotOff {
+  background: var(--color-vellum-shadow);
+}
+
+.integrationName {
+  font-family: var(--font-body);
+  font-size: var(--text-sm);
+  font-weight: 400;
+  color: var(--foreground);
+  text-transform: lowercase;
+}
+
+.integrationHint {
+  font-family: var(--font-mono);
+  font-size: var(--text-xs);
+  color: var(--color-earth-light);
+  line-height: 1.5;
+}
+
+.integrationStatus {
+  font-family: var(--font-mono);
+  font-size: var(--text-xs);
+  color: var(--pipe-color);
+}
+
+/* ── CHEAT SHEET ─────────────────────────────────────────────────── */
+
+.cheatInner {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-4);
+  padding: var(--space-6);
+}
+
+.cheatTitle {
+  font-family: var(--font-body);
+  font-size: var(--text-sm);
+  font-weight: 400;
+  letter-spacing: var(--tracking-label);
+  text-transform: uppercase;
+  color: var(--color-oxidized-copper);
+}
+
+.steps {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-3);
+  margin: 0;
+  padding: 0;
+  list-style: none;
+  counter-reset: step;
+}
+
+.step {
+  display: flex;
+  align-items: baseline;
+  gap: var(--space-3);
+  counter-increment: step;
+  font-family: var(--font-body);
+  font-size: var(--text-sm);
+  font-weight: 400;
+  color: var(--foreground);
+  text-transform: lowercase;
+  line-height: 1.5;
+}
+
+.step::before {
+  content: counter(step);
+  flex-shrink: 0;
+  width: 22px;
+  height: 22px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  border: 1px solid var(--pipe-color);
+  border-radius: var(--radius-full);
+  font-family: var(--font-mono);
+  font-size: var(--text-xs);
+  color: var(--pipe-color);
+}
+
+.cheatActions {
+  display: flex;
+  gap: var(--space-4);
+  flex-wrap: wrap;
+  margin-top: var(--space-1);
+}
+
+.cheatLink {
+  font-family: var(--font-body);
+  font-size: var(--text-sm);
+  font-weight: 400;
+  letter-spacing: 0.02em;
+  text-transform: lowercase;
+  color: var(--pipe-color);
+}
+
+/* ── RESPONSIVE ──────────────────────────────────────────────────── */
+
+@media (max-width: 640px) {
+  .main {
+    padding: var(--space-6) var(--space-4);
+  }
+
+  .integration {
+    grid-template-columns: 14px 1fr;
+    grid-template-areas:
+      "dot name"
+      ".   hint";
+    row-gap: var(--space-1);
+  }
+
+  .dot {
+    grid-area: dot;
+  }
+
+  .integrationName {
+    grid-area: name;
+  }
+
+  .integrationHint {
+    grid-area: hint;
+  }
+}

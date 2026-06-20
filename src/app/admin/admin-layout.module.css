@@ -1,0 +1,132 @@
+/* ═══════════════════════════════════════════════════════════════════
+   Admin Layout — slim obsidian admin bar + content shell.
+   Deliberately distinct from public chrome. All tokens from globals.
+   ═══════════════════════════════════════════════════════════════════ */
+
+.bar {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: var(--space-4);
+  flex-wrap: wrap;
+  background: var(--color-obsidian);
+  padding: var(--space-3) var(--space-6);
+  border-bottom: 1px solid var(--color-obsidian-border);
+}
+
+.brand {
+  font-family: var(--title-font);
+  font-weight: var(--title-weight);
+  font-size: var(--text-base);
+  letter-spacing: var(--title-tracking);
+  color: var(--color-vellum);
+  text-decoration: none;
+  text-transform: none;
+  white-space: nowrap;
+}
+
+.brand:hover {
+  color: var(--color-vellum);
+  opacity: 0.8;
+  text-decoration: none;
+}
+
+.accent {
+  color: var(--title-accent-color);
+}
+
+/* ── LINKS ───────────────────────────────────────────────────────── */
+
+.links {
+  display: flex;
+  align-items: center;
+  gap: var(--space-4);
+  flex-wrap: wrap;
+}
+
+.link,
+.signOut {
+  font-family: var(--font-body);
+  font-size: var(--text-sm);
+  font-weight: 300;
+  letter-spacing: var(--nav-letter-spacing);
+  text-transform: lowercase;
+  text-decoration: none;
+  color: var(--color-vellum-shadow);
+  background: none;
+  border: none;
+  padding: 0;
+  cursor: pointer;
+  transition: color var(--duration-fast) var(--ease-out);
+}
+
+.link:hover,
+.signOut:hover {
+  color: var(--title-accent-color);
+  text-decoration: none;
+}
+
+.signOut:disabled {
+  opacity: 0.5;
+  cursor: not-allowed;
+}
+
+/* ── PIPE SEPARATOR (dark-bar variant) ───────────────────────────── */
+
+.pipeSep {
+  position: relative;
+  display: inline-block;
+  width: 2px;
+  height: 14px;
+  background: var(--nav-pipe-color);
+  border-radius: 1px;
+  align-self: center;
+  opacity: 0.45;
+}
+
+.pipeSep::before,
+.pipeSep::after {
+  content: "";
+  position: absolute;
+  left: 50%;
+  transform: translateX(-50%);
+  width: 3px;
+  height: 2px;
+  background: var(--nav-pipe-color);
+  border-radius: 1px;
+}
+
+.pipeSep::before {
+  top: 0;
+}
+
+.pipeSep::after {
+  bottom: 0;
+}
+
+/* ── CONTENT SHELL ───────────────────────────────────────────────── */
+
+.content {
+  min-height: 50dvh;
+  background: var(--background);
+}
+
+/* ── RESPONSIVE ──────────────────────────────────────────────────── */
+
+@media (max-width: 640px) {
+  .bar {
+    flex-direction: column;
+    align-items: flex-start;
+    gap: var(--space-2);
+    padding: var(--space-3) var(--space-4);
+  }
+
+  .links {
+    gap: var(--space-3);
+  }
+
+  .link,
+  .signOut {
+    font-size: var(--text-xs);
+  }
+}

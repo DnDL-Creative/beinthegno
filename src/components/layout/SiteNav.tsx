@@ -1,11 +1,32 @@
 import Link from "next/link";
 import Image from "next/image";
+import { Fragment } from "react";
+import { getCollections } from "@/lib/catalog";
+import { CartLink } from "./CartLink";
+import { MobileNav } from "./MobileNav";
 import styles from "./SiteNav.module.css";
 
-const LOGO_URL =
-  "https://media.beinthegno.com/branding/main-logo.png";
+const LOGO_URL = "https://media.beinthegno.com/branding/main-logo.png";
 
-export function SiteNav() {
+/* Fallback when the catalog is empty / unreachable — the original
+   hard-coded four so the nav is never blank. */
+const FALLBACK_LINKS: Array<{ slug: string; navLabel: string }> = [
+  { slug: "copper", navLabel: "copper" },
+  { slug: "apparel", navLabel: "apparel" },
+  { slug: "orgone", navLabel: "orgone" },
+  { slug: "anti-emf", navLabel: "anti-emf" },
+  { slug: "healing", navLabel: "Heal & Succeed" },
+];
+
+export async function SiteNav() {
+  const collections = await getCollections();
+  const navItems =
+    collections.length > 0
+      ? collections
+          .filter((c) => c.showInNav)
+          .map((c) => ({ slug: c.slug, navLabel: c.navLabel }))
+      : FALLBACK_LINKS;
+
   return (
     <nav className={styles.nav}>
       <Link href="/" className={styles.brand}>
@@ -19,14 +40,16 @@ export function SiteNav() {
         />
       </Link>
       <div className={styles.links}>
-        <Link href="/apparel">Apparel</Link>
-        <span className={styles.pipeSep} />
-        <Link href="/copper">Copper</Link>
-        <span className={styles.pipeSep} />
-        <Link href="/anti-emf">Anti-EMF</Link>
-        <span className={styles.pipeSep} />
-        <Link href="/orgone">Orgone</Link>
+        {navItems.map((item) => (
+          <Fragment key={item.slug}>
+            <Link href={`/${item.slug}`}>{item.navLabel}</Link>
+            <span className={styles.pipeSep} />
+          </Fragment>
+        ))}
+        <CartLink className={styles.cartLink} />
       </div>
+
+      <MobileNav items={navItems} />
     </nav>
   );
 }

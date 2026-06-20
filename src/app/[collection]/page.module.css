@@ -1,0 +1,116 @@
+/* ═══════════════════════════════════════════════════════════════════
+   Collection — product listing. Header + grid copied from the
+   original apparel page. All tokens from globals.css.
+   ═══════════════════════════════════════════════════════════════════ */
+
+.main {
+  min-height: 100dvh;
+  background: var(--background);
+  padding: var(--space-8) var(--space-6);
+  max-width: 960px;
+  margin: 0 auto;
+}
+
+/* ── COMING SOON badge wrapped in a copper pipe frame ────────────── */
+
+.comingSoonFrame {
+  margin: var(--space-2) auto 0;
+}
+
+.madeToOrder {
+  margin-top: var(--space-4);
+}
+
+.madeToOrderHeader {
+  margin-top: var(--space-3);
+}
+
+.comingSoonBadge {
+  display: block;
+  padding: 14px 52px;
+  font-family: var(--font-body);
+  font-size: var(--text-lg);
+  font-weight: 300;
+  letter-spacing: 0.08em;
+  text-transform: lowercase;
+  color: var(--pipe-color);
+  text-align: center;
+  white-space: nowrap;
+}
+
+.header {
+  margin-bottom: var(--space-10);
+}
+
+.header h1 {
+  font-family: var(--title-font);
+  font-weight: var(--title-weight);
+  letter-spacing: var(--title-tracking);
+  color: var(--title-color);
+  font-size: var(--text-2xl);
+  margin-bottom: var(--space-1);
+}
+
+.subtitle {
+  font-family: var(--font-body);
+  font-size: var(--text-base);
+  font-weight: var(--tagline-font-weight);
+  letter-spacing: var(--tagline-letter-spacing);
+  text-transform: lowercase;
+  color: var(--tagline-color);
+  text-wrap: balance;
+}
+
+.accent {
+  color: var(--title-accent-color);
+}
+
+/* ── GRID ────────────────────────────────────────────────────────── */
+
+.grid {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-12);
+}
+
+/* ── DESKTOP HERO — centered, larger, breathing room ─────────────── */
+
+@media (min-width: 769px) {
+  .header {
+    text-align: center;
+    max-width: 760px;
+    margin: 0 auto var(--space-16);
+    padding-top: var(--space-10);
+  }
+
+  .header h1 {
+    font-size: var(--text-4xl);
+    margin-bottom: var(--space-3);
+  }
+
+  .subtitle {
+    font-size: var(--text-xl);
+  }
+
+  .madeToOrderHeader {
+    margin-top: var(--space-5);
+  }
+}
+
+/* ── MOBILE — compact, left-aligned, tight wraps ─────────────────── */
+
+@media (max-width: 768px) {
+  .subtitle {
+    max-width: 24ch;
+  }
+}
+
+@media (max-width: 640px) {
+  .main {
+    padding: var(--space-6) var(--space-4);
+  }
+
+  .header h1 {
+    font-size: var(--text-xl);
+  }
+}

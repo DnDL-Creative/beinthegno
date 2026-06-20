@@ -44,7 +44,7 @@
   font-weight: var(--title-weight);
   letter-spacing: var(--title-tracking);
   color: var(--title-color);
-  font-size: var(--text-2xl);
+  font-size: var(--text-4xl);
 }
 
 .accent {
@@ -53,10 +53,11 @@
 
 .message {
   font-family: var(--font-body);
-  font-size: var(--text-base);
+  font-size: var(--text-xl);
   font-weight: var(--tagline-font-weight);
   color: var(--foreground);
-  line-height: 1.6;
+  line-height: 1.7;
+  max-width: 42ch;
 }
 
 .badge {

@@ -1,0 +1,41 @@
+/* ═══════════════════════════════════════════════════════════════════
+   CartLink — cart icon + copper count bubble. Color is inherited from
+   the surrounding nav link (icon uses currentColor).
+   ═══════════════════════════════════════════════════════════════════ */
+
+.cart {
+  display: inline-flex;
+  align-items: center;
+  gap: var(--space-2);
+  text-decoration: none;
+}
+
+.cart:hover {
+  text-decoration: none;
+}
+
+.iconWrap {
+  position: relative;
+  display: inline-flex;
+  align-items: center;
+}
+
+.badge {
+  position: absolute;
+  top: -7px;
+  right: -9px;
+  min-width: 15px;
+  height: 15px;
+  padding: 0 4px;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  font-family: var(--font-body);
+  font-size: 9px;
+  font-weight: 600;
+  line-height: 1;
+  letter-spacing: 0;
+  color: var(--color-vellum);
+  background: var(--pipe-color);
+  border-radius: var(--radius-full);
+}

@@ -12,6 +12,15 @@
   background: var(--background);
 }
 
+/* ── NEWSLETTER (sits above the legal links) ─────────────────────── */
+
+.newsletter {
+  display: flex;
+  justify-content: center;
+  width: 100%;
+  margin-bottom: var(--space-4);
+}
+
 .footerLinks {
   display: flex;
   align-items: center;

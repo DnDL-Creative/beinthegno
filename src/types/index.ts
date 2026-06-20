@@ -5,6 +5,14 @@
 
 export type { Product, ProductVariant, Cart, CartLine, Collection } from "./shopify";
 export type { CodexPost, CodexPostPreview, CodexCategory } from "./codex";
+export type {
+  CatalogCollection,
+  CatalogProduct,
+  CatalogAsset,
+  ProductImage,
+  ProductOptionGroup,
+  Purchasability,
+} from "./catalog";
 
 /** Generic paginated response shape */
 export type PaginatedResponse<T> = {

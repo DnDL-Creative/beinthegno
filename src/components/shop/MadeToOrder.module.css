@@ -1,0 +1,41 @@
+.madeToOrder {
+  font-family: var(--font-body);
+  font-size: var(--text-sm);
+  font-weight: 300;
+  letter-spacing: 0.04em;
+  text-transform: lowercase;
+  color: var(--tagline-color);
+  line-height: 1.7;
+  text-wrap: pretty;
+}
+
+/* Alignment is set by context. center/left constrain width so the line
+   doesn't sprawl; "inherit" (no class) follows the parent — used in the
+   collection header, which is left on mobile and a centered hero on desktop. */
+.alignCenter {
+  text-align: center;
+  max-width: 38ch;
+  margin-left: auto;
+  margin-right: auto;
+}
+
+.alignLeft {
+  text-align: left;
+  max-width: 38ch;
+  margin-left: 0;
+}
+
+/* Keep the flag pair (and its connector) together — never split mid-line. */
+.flags {
+  white-space: nowrap;
+}
+
+.flag {
+  display: inline-block;
+  width: 1.5em;
+  height: 1em;
+  margin: 0 0.18em;
+  border-radius: 2px;
+  vertical-align: -0.15em;
+  box-shadow: 0 0 0 1px hsla(20, 25%, 20%, 0.12);
+}

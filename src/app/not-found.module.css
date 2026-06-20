@@ -1,0 +1,49 @@
+/* ═══════════════════════════════════════════════════════════════════
+   Not Found — branded 404 layout. Mirrors coming-soon.module.css.
+   ═══════════════════════════════════════════════════════════════════ */
+
+.main {
+  min-height: 100dvh;
+  background: var(--background);
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  text-align: center;
+  padding: var(--space-8) var(--space-6);
+  padding-bottom: var(--space-32);
+}
+
+.content {
+  max-width: 480px;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: var(--space-5);
+}
+
+.title {
+  font-family: var(--title-font);
+  font-weight: var(--title-weight);
+  letter-spacing: var(--title-tracking);
+  color: var(--title-color);
+  font-size: var(--text-2xl);
+}
+
+.accent {
+  color: var(--title-accent-color);
+}
+
+.message {
+  font-family: var(--font-body);
+  font-size: var(--text-base);
+  font-weight: var(--tagline-font-weight);
+  color: var(--foreground);
+  line-height: 1.6;
+}
+
+@media (max-width: 640px) {
+  .title {
+    font-size: var(--text-xl);
+  }
+}

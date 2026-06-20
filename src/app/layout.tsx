@@ -3,6 +3,7 @@ import { Cormorant_Garamond, Inter, JetBrains_Mono, Outfit } from "next/font/goo
 import { CookieConsent } from "@/components/ui/CookieConsent/CookieConsent";
 import { SiteNav } from "@/components/layout/SiteNav";
 import { SiteFooter } from "@/components/layout/SiteFooter";
+import { ServiceWorkerRegistrar } from "@/components/pwa/ServiceWorkerRegistrar";
 import "./globals.css";
 
 /* ── FONT LOADING ────────────────────────────────────────────────── */
@@ -76,6 +77,19 @@ export const metadata: Metadata = {
     index: true,
     follow: true,
   },
+  manifest: "/manifest.webmanifest",
+  appleWebApp: {
+    capable: true,
+    statusBarStyle: "default",
+    title: "intheGno",
+  },
+  icons: {
+    icon: [
+      { url: "/icons/icon-192x192.png", sizes: "192x192", type: "image/png" },
+      { url: "/icons/icon-512x512.png", sizes: "512x512", type: "image/png" },
+    ],
+    apple: [{ url: "/icons/icon-192x192.png", sizes: "192x192" }],
+  },
 };
 
 export const viewport: Viewport = {
@@ -107,6 +121,7 @@ export default function RootLayout({
         {children}
         <SiteFooter />
         <CookieConsent />
+        <ServiceWorkerRegistrar />
       </body>
     </html>
   );

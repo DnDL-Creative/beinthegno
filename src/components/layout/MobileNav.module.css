@@ -1,0 +1,167 @@
+/* ═══════════════════════════════════════════════════════════════════
+   MobileNav — side drawer. Mechanics mirror CineSonic's MobileNav;
+   styling uses intheGno's copper / vellum tokens. Shown ≤768px only.
+   ═══════════════════════════════════════════════════════════════════ */
+
+.root {
+  display: none;
+}
+
+@media (max-width: 768px) {
+  .root {
+    display: flex;
+    align-items: center;
+  }
+}
+
+/* ── Hamburger (opens only) ──────────────────────────────────────── */
+
+.hamburger {
+  height: 44px;
+  width: 44px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background: transparent;
+  border: none;
+  color: var(--pipe-color);
+  cursor: pointer;
+  position: relative;
+  z-index: var(--z-sticky);
+  -webkit-tap-highlight-color: transparent;
+  touch-action: manipulation;
+}
+
+/* ── Overlay layer ───────────────────────────────────────────────── */
+
+.overlay {
+  position: fixed;
+  inset: 0;
+  z-index: var(--z-modal);
+  opacity: 0;
+  pointer-events: none;
+  will-change: opacity;
+  transition: opacity 380ms var(--ease-out);
+}
+
+.overlayOpen {
+  opacity: 1;
+  pointer-events: auto;
+}
+
+.backdrop {
+  position: absolute;
+  inset: 0;
+  width: 100%;
+  height: 100%;
+  border: none;
+  cursor: pointer;
+  background: hsla(20, 25%, 12%, 0.55);
+  -webkit-backdrop-filter: blur(2px);
+  backdrop-filter: blur(2px);
+  touch-action: manipulation;
+}
+
+/* ── Drawer (slides from right) ──────────────────────────────────── */
+
+.drawer {
+  position: absolute;
+  top: 0;
+  right: 0;
+  height: 100%;
+  width: 84%;
+  max-width: 360px;
+  box-shadow: -14px 0 44px hsla(20, 25%, 20%, 0.35);
+  transform: translateX(100%);
+  will-change: transform;
+  backface-visibility: hidden;
+  transition: transform 420ms var(--ease-out);
+}
+
+.drawerOpen {
+  transform: translateX(0);
+}
+
+/* Copper pipe frame tracing the drawer edge (PipeFrame). Tight margin so
+   the pipe sits right on the edge; the content fills the panel. */
+.drawerFrame {
+  margin: 4px;
+  height: calc(100% - 8px);
+}
+
+.drawerInner {
+  display: flex;
+  flex-direction: column;
+  height: 100%;
+}
+
+/* ── Drawer header: close (LEFT) + wordmark ──────────────────────── */
+
+.drawerHeader {
+  display: flex;
+  align-items: center;
+  gap: var(--space-3);
+  padding: var(--space-4);
+  border-bottom: 1px solid var(--border);
+  flex-shrink: 0;
+}
+
+.closeBtn {
+  height: 40px;
+  width: 40px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  flex-shrink: 0;
+  border-radius: var(--radius-full);
+  background: var(--surface);
+  border: 1px solid var(--border);
+  color: var(--color-earth);
+  cursor: pointer;
+  -webkit-tap-highlight-color: transparent;
+  touch-action: manipulation;
+}
+
+.wordmark {
+  font-family: var(--title-font);
+  font-weight: var(--title-weight);
+  font-size: var(--text-lg);
+  letter-spacing: var(--title-tracking);
+  color: var(--title-color);
+}
+
+.accent {
+  color: var(--title-accent-color);
+}
+
+/* ── Drawer links ────────────────────────────────────────────────── */
+
+.drawerNav {
+  flex: 1;
+  overflow-y: auto;
+  -webkit-overflow-scrolling: touch;
+  padding: var(--space-2) 0;
+}
+
+.drawerLink {
+  display: block;
+  padding: var(--space-4) var(--space-6);
+  font-family: var(--font-body);
+  font-size: var(--text-xl);
+  font-weight: 300;
+  letter-spacing: var(--nav-letter-spacing);
+  text-transform: lowercase;
+  color: var(--nav-color);
+  text-decoration: none;
+  border-bottom: 1px solid var(--border);
+  transition: color var(--duration-fast) var(--ease-out);
+}
+
+.drawerLink:active {
+  opacity: 0.6;
+}
+
+.drawerLink:hover {
+  color: var(--nav-color-hover);
+  text-decoration: none;
+}

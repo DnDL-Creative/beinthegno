@@ -3,25 +3,12 @@
    Uses @supabase/ssr for App Router compatibility.
    ═══════════════════════════════════════════════════════════════════ */
 
-import { createBrowserClient } from "@supabase/ssr";
 import { createServerClient } from "@supabase/ssr";
 import { cookies } from "next/headers";
 
-/**
- * Create a Supabase client for use in Client Components.
- */
-export function createSupabaseBrowserClient() {
-  const supabaseUrl = process.env.NEXT_PUBLIC_SUPABASE_URL;
-  const supabaseKey = process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY;
-
-  if (!supabaseUrl || !supabaseKey) {
-    throw new Error(
-      "[intheGno] Missing NEXT_PUBLIC_SUPABASE_URL or NEXT_PUBLIC_SUPABASE_ANON_KEY"
-    );
-  }
-
-  return createBrowserClient(supabaseUrl, supabaseKey);
-}
+// Browser client lives in ./supabase-browser to keep next/headers out of
+// the client bundle. Re-exported here for backward-compatible imports.
+export { createSupabaseBrowserClient } from "./supabase-browser";
 
 /**
  * Create a Supabase client for use in Server Components, API routes,

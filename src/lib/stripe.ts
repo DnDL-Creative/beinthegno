@@ -1,29 +1,24 @@
 /* ═══════════════════════════════════════════════════════════════════
-   Stripe API Helpers
-   Direct billing, subscriptions, and custom invoicing.
+   Stripe — digital download checkout. Server-side only.
+   Physical goods check out through Shopify; digital meditations and
+   other downloadables check out here (no Shopify fees, no app spend).
    ═══════════════════════════════════════════════════════════════════ */
 
-// NOTE: Install before use:
-//   npm install stripe
+import Stripe from "stripe";
 
-// import Stripe from "stripe";
+let _stripe: Stripe | null = null;
 
-/**
- * Stripe singleton — lazily initialized.
- * Only use in server-side code (API routes, Server Actions).
- */
-// export const stripe = new Stripe(process.env.STRIPE_SECRET_KEY!, {
-//   apiVersion: "2024-12-18.acacia",
-//   typescript: true,
-// });
+export function isStripeConfigured(): boolean {
+  return Boolean(process.env.STRIPE_SECRET_KEY);
+}
 
-/**
- * Placeholder — uncomment and configure once Stripe keys are provisioned.
- * 
- * Intended usage:
- * - Subscription management for Vitality Alchemy consumables
- * - Custom invoicing for wholesale/B2B orders
- * - Direct payment flows outside Shopify checkout
- */
-
-export {};
+export function getStripe(): Stripe {
+  const key = process.env.STRIPE_SECRET_KEY;
+  if (!key) {
+    throw new Error("[intheGno] Missing STRIPE_SECRET_KEY environment variable.");
+  }
+  if (!_stripe) {
+    _stripe = new Stripe(key, { typescript: true });
+  }
+  return _stripe;
+}

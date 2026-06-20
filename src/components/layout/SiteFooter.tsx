@@ -1,9 +1,13 @@
 import Link from "next/link";
+import { Newsletter } from "@/components/marketing";
 import styles from "./SiteFooter.module.css";
 
 export function SiteFooter() {
   return (
     <footer className={styles.footer}>
+      <div className={styles.newsletter}>
+        <Newsletter />
+      </div>
       <div className={styles.footerLinks}>
         <Link href="/privacy">Privacy Policy</Link>
         <span className={styles.pipeSep} />
