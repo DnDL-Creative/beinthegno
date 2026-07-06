@@ -28,10 +28,19 @@ CREATE TABLE IF NOT EXISTS public.itg_posts (
 -- RLS: allow public read for published posts
 ALTER TABLE public.itg_posts ENABLE ROW LEVEL SECURITY;
 
+DROP POLICY IF EXISTS "Public can read published itg_posts" ON public.itg_posts;
 CREATE POLICY "Public can read published itg_posts"
   ON public.itg_posts FOR SELECT
-  USING (published = true);
+  USING (published = true OR public.itg_is_admin());
 
-CREATE POLICY "Authenticated users can manage itg_posts"
+-- Writes are admin-only. The Supabase project is SHARED across DnDL apps,
+-- so auth.role() = 'authenticated' would let any self-signed-up user from
+-- another app deface posts / inject stored XSS via music_embed. Gate on
+-- public.itg_is_admin() (defined in sql/itg_commerce.sql) WITH CHECK.
+-- See sql/2026-06-20_security_itg_posts_rls.sql (H6).
+DROP POLICY IF EXISTS "Authenticated users can manage itg_posts" ON public.itg_posts;
+DROP POLICY IF EXISTS "itg_posts admin write" ON public.itg_posts;
+CREATE POLICY "itg_posts admin write"
   ON public.itg_posts FOR ALL
-  USING (auth.role() = 'authenticated');
+  USING (public.itg_is_admin())
+  WITH CHECK (public.itg_is_admin());

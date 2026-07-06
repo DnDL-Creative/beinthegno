@@ -6,6 +6,9 @@ import parse from "html-react-parser";
 import { PipeFrame } from "@/components/ui/PipeFrame/PipeFrame";
 import { getPost, getAllSlugs, getAllPosts } from "../posts";
 import { processShortcodes } from "../processShortcodes";
+import { richReplace } from "./_components/richReplace";
+import { renderInlineMarkup, stripInlineMarkup } from "./_components/inlineMarkup";
+import ReadingProgress from "./_components/ReadingProgress";
 import RelatedPosts from "./_components/RelatedPosts";
 import ProductCarousel from "./_components/ProductCarousel";
 import CarouselHydrator from "./_components/CarouselHydrator";
@@ -33,14 +36,14 @@ export async function generateMetadata({
   const post = await getPost(slug);
   if (!post) return { title: "Not Found" };
   return {
-    title: post.seoTitle || post.title,
-    description: post.metaDescription || post.subtitle,
+    title: post.seoTitle || stripInlineMarkup(post.title),
+    description: post.metaDescription || stripInlineMarkup(post.subtitle),
     openGraph: {
-      title: post.seoTitle || post.title,
-      description: post.metaDescription || post.subtitle,
+      title: post.seoTitle || stripInlineMarkup(post.title),
+      description: post.metaDescription || stripInlineMarkup(post.subtitle),
       type: "article",
       ...(post.heroImage && {
-        images: [{ url: post.heroImage, width: 1200, height: 630, alt: post.heroImageAlt || post.title }],
+        images: [{ url: post.heroImage, width: 1200, height: 630, alt: post.heroImageAlt || stripInlineMarkup(post.title) }],
       }),
     },
   };
@@ -59,6 +62,7 @@ export default async function BlogPostPage({
 
   return (
     <main className={styles.main}>
+      <ReadingProgress color="var(--color-copper, #B87333)" />
       {/* ── HERO IMAGE ──────────────────────────────────────────── */}
       {post.heroImage && (
       <div className={styles.heroWrap} style={{ margin: '46px auto 44px' }}>
@@ -70,7 +74,7 @@ export default async function BlogPostPage({
             }}>
               <Image
                 src={post.heroImage}
-                alt={post.heroImageAlt || post.title}
+                alt={post.heroImageAlt || stripInlineMarkup(post.title)}
                 width={960}
                 height={540}
                 priority
@@ -90,7 +94,7 @@ export default async function BlogPostPage({
             <PipeFrame>
               <Image
                 src={post.heroImage}
-                alt={post.heroImageAlt || post.title}
+                alt={post.heroImageAlt || stripInlineMarkup(post.title)}
                 width={960}
                 height={540}
                 className={styles.heroImage}
@@ -115,9 +119,9 @@ export default async function BlogPostPage({
 
         {/* ── HEADER ────────────────────────────────────────────── */}
         <header className={styles.header}>
-          <h1 className={styles.title}>{post.title}</h1>
+          <h1 className={styles.title} dangerouslySetInnerHTML={{ __html: renderInlineMarkup(post.title) }} />
           {post.subtitle && (
-            <p className={styles.subtitle}>{post.subtitle}</p>
+            <p className={styles.subtitle} dangerouslySetInnerHTML={{ __html: renderInlineMarkup(post.subtitle) }} />
           )}
           <div className={styles.meta}>
             <span>{post.date}</span>
@@ -142,11 +146,16 @@ export default async function BlogPostPage({
         <AudioSection musicEmbed={post.musicEmbed} blogcastUrl={post.blogcastUrl} />
 
         {/* ── BODY CONTENT ────────────────────────────────────── */}
-        <div className={styles.body} data-lightbox>
+        {/* .hasToc reveals the per-h2 "back to contents" arrows (only when the
+            post actually has a Table of Contents block). */}
+        <div
+          className={`${styles.body}${post.content?.includes("data-vibe-toc") ? ` ${styles.hasToc}` : ""}`}
+          data-lightbox
+        >
           <CarouselHydrator />
           <ImageLightbox />
           <AudioHydrator />
-          {post.content ? parse(processShortcodes(post.content)) : (
+          {post.content ? parse(processShortcodes(post.content), { replace: richReplace }) : (
             <p>Content unavailable.</p>
           )}
         </div>

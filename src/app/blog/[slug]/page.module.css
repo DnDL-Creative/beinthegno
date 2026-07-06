@@ -43,6 +43,28 @@
   padding: 0 var(--space-6);
 }
 
+/* ── BODY LISTS ──────────────────────────────────────────────────────
+   Explicit list-style + padding. Tailwind v4 Preflight resets ul/ol to
+   list-style:none with zero padding, which dropped every bullet/number
+   from parsed post content. These restore them, scoped to the article. */
+.article :where(ul) {
+  list-style: disc outside;
+  margin: 0 0 1.75rem;
+  padding-left: 1.625rem;
+}
+.article :where(ol) {
+  list-style: decimal outside;
+  margin: 0 0 1.75rem;
+  padding-left: 1.625rem;
+}
+.article :where(li) {
+  margin-bottom: 0.5rem;
+  padding-left: 0.25rem;
+}
+.article :where(li)::marker {
+  color: rgba(184, 115, 51, 0.95);
+}
+
 /* ── HEADER ──────────────────────────────────────────────────────── */
 
 .header {
@@ -145,7 +167,9 @@
   letter-spacing: var(--title-tracking);
   color: var(--title-color);
   line-height: 1.15;
-  white-space: pre-line;
+  /* Honor the author's manual line breaks (Shift+Enter in VibeWriter) exactly as
+     written on desktop; phones reflow via the @max-width:640 override below. */
+  white-space: pre;
   max-width: clamp(340px, 92vw, 1100px);
   padding-inline: 1.5rem;
 }
@@ -157,7 +181,7 @@
   font-style: italic;
   color: var(--foreground);
   opacity: 0.7;
-  white-space: pre-line;
+  white-space: pre;
   max-width: clamp(340px, 94vw, 1100px);
   padding-inline: 1.5rem;
 }
@@ -851,6 +875,13 @@
     font-size: clamp(1.4rem, 1.2rem + 1vw, 2.8rem);
   }
 
+  /* On phones, reflow the manual breaks so long lines wrap instead of
+     overflowing the narrow viewport. */
+  .title,
+  .subtitle {
+    white-space: pre-line;
+  }
+
   .meta {
     gap: var(--space-3);
     flex-wrap: wrap;
@@ -912,5 +943,210 @@
 
 .body :global(.itg-embed-tiktok) {
   border-left: 3px solid #010101;
+}
+
+/* ═══════════════════════════════════════════════════════════════════
+   VibeWriter blocks — FAQ / TOC / CTA / inline image / divider.
+   These arrive as raw HTML in post.content and are upgraded by richReplace
+   (or styled here when they stay as plain tags). Themed to copper/vellum.
+   ═══════════════════════════════════════════════════════════════════ */
+
+/* ── Body links — oxidized copper, copper-bright on hover ─── */
+.body a {
+  color: var(--color-copper, #B87333);
+  text-decoration: underline;
+  text-decoration-thickness: 1px;
+  text-underline-offset: 0.18em;
+  text-decoration-color: rgba(184, 115, 51, 0.55);
+  transition: color var(--duration-fast) var(--ease-out),
+    text-decoration-color var(--duration-fast) var(--ease-out);
+}
+.body a:hover {
+  color: var(--color-copper-bright, hsl(28, 80%, 55%));
+  text-decoration-color: var(--color-copper, #B87333);
+}
+
+/* ── Inline CTA pill (richReplace → CtaButton). Copper→brass gradient fill,
+      copper glow. The label color is set inline (contrast-aware). ─── */
+.ctaButton {
+  display: inline-block;
+  padding: 0.95rem 2.1rem;
+  border-radius: 999px;
+  background-image: linear-gradient(
+    135deg,
+    var(--color-copper, #B87333) 0%,
+    var(--color-brass, hsl(43, 60%, 55%)) 50%,
+    var(--color-copper, #B87333) 100%
+  );
+  background-size: 200% auto;
+  color: var(--color-forged-iron, #1C1C1C);
+  font-family: var(--font-body);
+  font-weight: 700;
+  font-size: 1.02rem;
+  letter-spacing: 0.01em;
+  text-decoration: none;
+  box-shadow: 0 6px 24px rgba(184, 115, 51, 0.32);
+  transition: transform 0.2s ease, box-shadow 0.2s ease, background-position 0.4s ease;
+}
+.ctaButton:hover {
+  transform: translateY(-2px);
+  background-position: right center;
+  box-shadow: 0 8px 32px rgba(184, 115, 51, 0.48);
+}
+
+/* The CTA renders INSIDE .body, where `.body a` (0,1,1) outranks the
+   `.ctaButton` class (0,1,0) — it was forcing the link color + underline.
+   Re-assert no underline + the gradient fill at higher specificity (0,2,1).
+   The solid, contrast-aware label color is set inline by CtaButton. */
+.body a.ctaButton {
+  text-decoration: none;
+  color: var(--color-forged-iron, #1C1C1C);
+}
+.body a.ctaButton:hover {
+  color: var(--color-forged-iron, #1C1C1C);
+}
+
+/* ── Section-heading anchor offset (so TOC jumps clear the fixed navbar) + the
+      "back to contents" arrow on each h2 (revealed only when .body has .hasToc).
+      richReplace renders a <TocBackLink> inside every h2. ─── */
+.body h2 {
+  scroll-margin-top: 6rem;
+}
+.body a.tocBack {
+  display: none;
+  float: right;
+  margin: 0.05rem 0 0 0.75rem;
+  padding: 0.5rem; /* bigger click target around the arrow */
+  border-radius: 999px;
+  line-height: 0;
+  color: var(--color-copper, #B87333);
+  -webkit-text-fill-color: var(--color-copper, #B87333);
+  text-decoration: none;
+  background: none;
+  animation: none;
+  opacity: 0.55;
+  transition: opacity 0.2s ease, background 0.2s ease, transform 0.2s ease;
+}
+.body.hasToc a.tocBack {
+  display: inline-block;
+}
+.body a.tocBack:hover {
+  opacity: 1;
+  background: rgba(184, 115, 51, 0.14);
+  transform: translateY(-1px);
+}
+
+/* ── Manual thematic divider — insert a horizontal rule (<hr>) in VibeWriter to
+      place a copper gradient line + soft glow. Responsive, centered. ─── */
+.body hr {
+  border: none;
+  height: 1px;
+  width: 100%;
+  margin: 1.25rem auto;
+  position: relative;
+  background: linear-gradient(
+    90deg,
+    transparent 0%,
+    rgba(184, 115, 51, 0.15) 25%,
+    rgba(184, 115, 51, 0.5) 50%,
+    rgba(184, 115, 51, 0.15) 75%,
+    transparent 100%
+  );
+}
+.body hr::after {
+  content: "";
+  position: absolute;
+  left: 50%;
+  top: -4px;
+  transform: translateX(-50%);
+  width: 60%;
+  height: 9px;
+  background: linear-gradient(
+    180deg,
+    transparent,
+    rgba(184, 115, 51, 0.12),
+    transparent
+  );
+  filter: blur(4px);
+  pointer-events: none;
+}
+
+/* ═══════════════════════════════════════════════════════════════════
+   VibeWriter inline image block — <figure data-vibe-img data-size data-align>.
+   alt lives on the <img> (invisible/SEO); caption is the visible <figcaption>.
+   Sizing/alignment hook off data-attributes (classes don't survive the save).
+   ═══════════════════════════════════════════════════════════════════ */
+.body figure[data-vibe-img] {
+  margin: 1.5rem auto 0.5rem;
+  max-width: 720px;
+}
+.body figure[data-vibe-img][data-size="small"] { max-width: 220px; }
+.body figure[data-vibe-img][data-size="medium"] { max-width: 480px; }
+.body figure[data-vibe-img][data-size="large"] { max-width: 720px; }
+.body figure[data-vibe-img][data-size="full"] { max-width: 100%; }
+.body figure[data-vibe-img][data-align="left"] {
+  margin-left: 0;
+  margin-right: auto;
+}
+.body figure[data-vibe-img][data-align="center"] {
+  margin-left: auto;
+  margin-right: auto;
+}
+.body figure[data-vibe-img][data-align="right"] {
+  margin-left: auto;
+  margin-right: 0;
+}
+.body figure[data-vibe-img] img {
+  width: 100%;
+  height: auto;
+  display: block;
+  border-radius: var(--radius-md, 0.5rem);
+  border: 1px solid rgba(184, 115, 51, 0.5);
+  box-shadow:
+    0 16px 40px -16px rgba(28, 28, 28, 0.35),
+    0 0 24px -8px rgba(184, 115, 51, 0.25);
+  transition: border-color 0.4s ease, box-shadow 0.4s ease;
+}
+.body figure[data-vibe-img]:hover img {
+  border-color: rgba(184, 115, 51, 0.8);
+  box-shadow:
+    0 20px 48px -16px rgba(28, 28, 28, 0.42),
+    0 0 32px -6px rgba(184, 115, 51, 0.38);
+}
+.body figure[data-vibe-img] figcaption {
+  margin-top: 0.55rem;
+  font-family: var(--font-body);
+  font-size: 0.78rem;
+  font-style: italic;
+  text-align: center;
+  color: var(--nav-color, #8A7D6B);
+}
+
+/* ═══════════════════════════════════════════════════════════════════
+   VibeWriter carousel — <figure data-vibe-carousel><img>…</figure>.
+   Horizontal scroll-snap strip that peeks the next image. Zero JS.
+   ═══════════════════════════════════════════════════════════════════ */
+.body figure[data-vibe-carousel] {
+  margin: 2rem auto;
+  max-width: 760px;
+  display: flex;
+  gap: 0.75rem;
+  overflow-x: auto;
+  scroll-snap-type: x mandatory;
+  -webkit-overflow-scrolling: touch;
+  padding-bottom: 0.5rem;
+  scrollbar-width: none;
+}
+.body figure[data-vibe-carousel]::-webkit-scrollbar {
+  display: none;
+}
+.body figure[data-vibe-carousel] img {
+  flex: 0 0 88%;
+  scroll-snap-align: center;
+  width: 88%;
+  height: auto;
+  border-radius: var(--radius-md, 0.5rem);
+  border: 1px solid rgba(184, 115, 51, 0.5);
+  object-fit: cover;
 }
 

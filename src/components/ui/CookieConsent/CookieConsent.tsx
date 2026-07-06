@@ -31,23 +31,30 @@ export function CookieConsent() {
   const [visible, setVisible] = useState(false);
 
   useEffect(() => {
-    if (!getConsent()) {
-      const t = setTimeout(() => setVisible(true), 800);
-      return () => clearTimeout(t);
+    const c = getConsent();
+    if (c === "accepted" || c === "declined") {
+      // returning visitor — mirror their choice into the gate the chat widget reads
+      try { localStorage.setItem("cookie_consent", c); } catch { /* storage blocked */ }
+      if (c === "accepted") window.dispatchEvent(new Event("cookie-consent-changed"));
+      return;
     }
+    const t = setTimeout(() => setVisible(true), 800);
+    return () => clearTimeout(t);
   }, []);
 
   if (!visible) return null;
 
-  const handleAccept = () => {
-    setConsent("accepted");
+  // Mirror the consent into localStorage "cookie_consent" (+ fire an event) so
+  // the gated chat widget (TawkChat) reacts immediately, no reload.
+  const record = (value: "accepted" | "declined") => {
+    setConsent(value);
+    try { localStorage.setItem("cookie_consent", value); } catch { /* storage blocked */ }
+    window.dispatchEvent(new Event("cookie-consent-changed"));
     setVisible(false);
   };
 
-  const handleDecline = () => {
-    setConsent("declined");
-    setVisible(false);
-  };
+  const handleAccept = () => record("accepted");
+  const handleDecline = () => record("declined");
 
   return (
     <div className={styles.wrapper} role="dialog" aria-label="Cookie consent">

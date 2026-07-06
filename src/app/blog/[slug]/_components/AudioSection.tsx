@@ -22,8 +22,57 @@ const getBlogcastEmbed = (url) => {
   return url;
 };
 
+/* ── music_embed XSS guard (H7) ───────────────────────────────────────
+ * music_embed is admin-entered free-form HTML (typically a pasted
+ * <iframe>). Rendering it via dangerouslySetInnerHTML was a stored-XSS
+ * sink. Instead we extract a single embed URL — either a bare URL or the
+ * src of a pasted <iframe> — and only accept it if its host is an
+ * allowlisted embed provider. The validated URL is then rendered into a
+ * fixed sandboxed <iframe>; anything that doesn't match renders nothing.
+ */
+const EMBED_HOST_ALLOWLIST = [
+  "open.spotify.com",
+  "w.soundcloud.com",
+  "www.youtube.com",
+  "www.youtube-nocookie.com",
+  "youtube.com",
+  "youtube-nocookie.com",
+  "bandcamp.com",
+];
+
+const isAllowedEmbedHost = (host) => {
+  const h = host.toLowerCase();
+  return EMBED_HOST_ALLOWLIST.some(
+    (allowed) => h === allowed || h.endsWith(`.${allowed}`)
+  );
+};
+
+const getMusicEmbedUrl = (value) => {
+  if (!value || typeof value !== "string") return null;
+  const trimmed = value.trim();
+
+  // Pull a candidate URL: either the whole value (bare URL) or the src of
+  // a pasted <iframe>.
+  let candidate = trimmed;
+  if (!/^https?:\/\//i.test(trimmed)) {
+    const srcMatch = trimmed.match(/<iframe[^>]*\ssrc=["']([^"']+)["']/i);
+    if (!srcMatch) return null;
+    candidate = srcMatch[1];
+  }
+
+  try {
+    const parsed = new URL(candidate);
+    if (parsed.protocol !== "https:") return null;
+    if (!isAllowedEmbedHost(parsed.hostname)) return null;
+    return parsed.toString();
+  } catch {
+    return null;
+  }
+};
+
 export default function AudioSection({ musicEmbed, blogcastUrl }) {
-  const hasMusic = !!musicEmbed;
+  const safeMusicEmbedUrl = getMusicEmbedUrl(musicEmbed);
+  const hasMusic = !!safeMusicEmbedUrl;
   const hasBlogcast = !!blogcastUrl;
   const hasBoth = hasMusic && hasBlogcast;
 
@@ -79,9 +128,15 @@ export default function AudioSection({ musicEmbed, blogcastUrl }) {
 
               <div className="mt-auto w-full">
                 <div className="w-full rounded-xl overflow-hidden shadow-sm min-h-[152px] bg-slate-50" style={{ border: "1px solid color-mix(in srgb, var(--accent, #B87333) 15%, transparent)" }}>
-                  <div
-                    className="w-full [&>iframe]:w-full [&>iframe]:block"
-                    dangerouslySetInnerHTML={{ __html: musicEmbed }}
+                  <iframe
+                    src={safeMusicEmbedUrl}
+                    title="Background music"
+                    className="w-full block min-h-[152px]"
+                    width="100%"
+                    height="152"
+                    loading="lazy"
+                    sandbox="allow-scripts allow-same-origin allow-presentation"
+                    allow="encrypted-media; fullscreen; picture-in-picture"
                   />
                 </div>
               </div>

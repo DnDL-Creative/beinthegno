@@ -4,6 +4,7 @@ import { CookieConsent } from "@/components/ui/CookieConsent/CookieConsent";
 import { SiteNav } from "@/components/layout/SiteNav";
 import { SiteFooter } from "@/components/layout/SiteFooter";
 import { ServiceWorkerRegistrar } from "@/components/pwa/ServiceWorkerRegistrar";
+import TawkChat from "@/components/TawkChat";
 import "./globals.css";
 
 /* ── FONT LOADING ────────────────────────────────────────────────── */
@@ -122,6 +123,9 @@ export default function RootLayout({
         <SiteFooter />
         <CookieConsent />
         <ServiceWorkerRegistrar />
+        {/* Site-wide live chat (intheGno tawk.to property). IDs are public — they
+            ship in the embed script — so hardcoded like CineSonic / Blue Flag. */}
+        <TawkChat propertyId="6a4aff094b956a1d4cbbd766" widgetId="1jsqf8ev6" />
       </body>
     </html>
   );
