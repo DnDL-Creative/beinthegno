@@ -78,6 +78,11 @@ export const metadata: Metadata = {
     index: true,
     follow: true,
   },
+  alternates: {
+    types: {
+      "application/rss+xml": [{ url: "/feed.xml", title: "intheGno — Observations" }],
+    },
+  },
   manifest: "/manifest.webmanifest",
   appleWebApp: {
     capable: true,

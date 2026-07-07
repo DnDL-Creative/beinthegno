@@ -10,6 +10,10 @@ import { getAllSlugs } from "@/app/blog/posts";
    transient backend failure degrades to the static map instead of a 500.
    ═══════════════════════════════════════════════════════════════════ */
 
+// Rebuild the sitemap hourly (ISR) so posts/products added in the CMS show up
+// for crawlers WITHOUT a redeploy. Without this it's frozen at build time.
+export const revalidate = 3600;
+
 const BASE_URL = "https://beinthegno.com";
 
 const STATIC_PATHS = [
