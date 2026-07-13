@@ -2,6 +2,7 @@ import type { Metadata } from "next";
 import Image from "next/image";
 import Link from "next/link";
 import { notFound } from "next/navigation";
+import { draftMode } from "next/headers";
 import parse from "html-react-parser";
 import { PipeFrame } from "@/components/ui/PipeFrame/PipeFrame";
 import { getPost, getAllSlugs, getAllPosts } from "../posts";
@@ -58,10 +59,62 @@ export default async function BlogPostPage({
   const post = await getPost(slug);
   if (!post) notFound();
 
+  // Draft Mode = we arrived via VibeWriter's "Save & Preview". Show an
+  // unmistakable banner (with a one-click exit) so a preview is never mistaken
+  // for the live page. The cookie is per-browser, not per-post — so once you've
+  // previewed one draft, every blog page shows the strip until you exit. Only
+  // call it a "draft" when this post is actually unpublished.
+  const { isEnabled: isDraft } = await draftMode();
+
   const allPosts = await getAllPosts();
 
   return (
     <main className={styles.main}>
+      {isDraft && (
+        <div
+          style={{
+            position: "sticky",
+            top: 0,
+            zIndex: 1000,
+            display: "flex",
+            flexWrap: "wrap",
+            alignItems: "center",
+            justifyContent: "center",
+            gap: "0.4rem 1rem",
+            padding: post.published === false ? "0.6rem 1rem" : "0.4rem 1rem",
+            background:
+              post.published === false
+                ? "linear-gradient(90deg, #B87333, hsl(28, 80%, 55%))"
+                : "rgba(28,28,28,0.92)",
+            color: post.published === false ? "#1C1C1C" : "#B87333",
+            fontSize: post.published === false ? "0.82rem" : "0.74rem",
+            fontWeight: 700,
+            letterSpacing: "0.02em",
+            textAlign: "center",
+            borderBottom:
+              post.published === false ? "none" : "1px solid rgba(184,115,51,0.25)",
+            boxShadow:
+              post.published === false ? "0 2px 12px rgba(0,0,0,0.25)" : "none",
+          }}
+        >
+          <span>
+            {post.published === false
+              ? "Draft preview — this post is not published. Only you can see this."
+              : "Preview mode is on — this post is already published (you're seeing the live version)."}
+          </span>
+          <a
+            href={`/api/preview/disable?slug=${encodeURIComponent(slug)}`}
+            style={{
+              color: post.published === false ? "#1C1C1C" : "#B87333",
+              textDecoration: "underline",
+              fontWeight: 800,
+              whiteSpace: "nowrap",
+            }}
+          >
+            Exit preview →
+          </a>
+        </div>
+      )}
       <ReadingProgress color="var(--color-copper, #B87333)" />
       {/* ── HERO IMAGE ──────────────────────────────────────────── */}
       {post.heroImage && (

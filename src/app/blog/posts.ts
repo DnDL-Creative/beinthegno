@@ -5,7 +5,9 @@
  * Falls back to static data if DB is unreachable.
  */
 
+import { draftMode } from "next/headers";
 import { createSupabaseServerClient } from "@/lib/supabase";
+import { createSupabaseAdminClient } from "@/lib/supabase-admin";
 import { createClient } from "@supabase/supabase-js";
 
 /* ═══════════════════════════════════════════════════════════════════
@@ -37,6 +39,8 @@ export interface BlogPost {
   authorTitle?: string;
   /** Hero image style preferences */
   heroStyle?: { ratio?: string; shape?: string };
+  /** false only for a not-yet-published draft (seen via "Save & Preview") */
+  published?: boolean;
 }
 
 /* ═══════════════════════════════════════════════════════════════════
@@ -108,6 +112,7 @@ function rowToPost(row: any): BlogPost {
     author: row.author || undefined,
     authorTitle: row.author_title || undefined,
     heroStyle: row.hero_style || undefined,
+    published: row.published === true,
   };
 }
 
@@ -136,14 +141,25 @@ export async function getAllPosts(): Promise<BlogPost[]> {
 }
 
 export async function getPost(slug: string): Promise<BlogPost | undefined> {
+  // Draft Mode (VibeWriter "Save & Preview"): when the draft cookie is present,
+  // read the row with the service-role client and DROP the published filter, so
+  // an UNPUBLISHED draft renders through this exact page. Public visitors never
+  // have the cookie, so they only ever see published posts. The try/catch guards
+  // build-time static generation, where draftMode() has no request scope.
+  let preview = false;
   try {
-    const supabase = await createSupabaseServerClient();
-    const { data, error } = await supabase
-      .from("itg_posts")
-      .select("*")
-      .eq("slug", slug)
-      .eq("published", true)
-      .maybeSingle();
+    preview = (await draftMode()).isEnabled;
+  } catch {
+    preview = false;
+  }
+
+  try {
+    const supabase = preview
+      ? createSupabaseAdminClient()
+      : await createSupabaseServerClient();
+    let query = supabase.from("itg_posts").select("*").eq("slug", slug);
+    if (!preview) query = query.eq("published", true);
+    const { data, error } = await query.maybeSingle();
 
     if (error) throw error;
     if (data) return rowToPost(data);

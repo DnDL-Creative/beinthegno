@@ -1,5 +1,5 @@
 import type { Metadata, Viewport } from "next";
-import { Cormorant_Garamond, Inter, JetBrains_Mono, Outfit } from "next/font/google";
+import { Cormorant_Garamond, Inter, JetBrains_Mono, Newsreader, Outfit, Space_Grotesk } from "next/font/google";
 import { CookieConsent } from "@/components/ui/CookieConsent/CookieConsent";
 import { SiteNav } from "@/components/layout/SiteNav";
 import { SiteFooter } from "@/components/layout/SiteFooter";
@@ -35,6 +35,21 @@ const outfit = Outfit({
   variable: "--font-outfit",
   subsets: ["latin"],
   weight: ["200", "300", "400", "500", "600"],
+  display: "swap",
+});
+
+const spaceGrotesk = Space_Grotesk({
+  variable: "--font-space-grotesk",
+  subsets: ["latin"],
+  weight: ["400", "500", "600", "700"],
+  display: "swap",
+});
+
+const newsreader = Newsreader({
+  variable: "--font-newsreader",
+  subsets: ["latin"],
+  weight: ["300", "400", "500", "600"],
+  style: ["normal", "italic"],
   display: "swap",
 });
 
@@ -118,7 +133,7 @@ export default function RootLayout({
   return (
     <html
       lang="en"
-      className={`${cormorant.variable} ${inter.variable} ${jetbrains.variable} ${outfit.variable}`}
+      className={`${cormorant.variable} ${inter.variable} ${jetbrains.variable} ${outfit.variable} ${spaceGrotesk.variable} ${newsreader.variable}`}
       style={{ colorScheme: "light" }}
       suppressHydrationWarning
     >

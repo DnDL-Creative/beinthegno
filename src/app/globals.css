@@ -63,6 +63,9 @@
   --font-body:                var(--font-inter), 'Inter', system-ui, sans-serif;
   --font-mono:                var(--font-jetbrains), 'JetBrains Mono', monospace;
   --font-outfit:              var(--font-outfit), 'Outfit', system-ui, sans-serif;
+  /* Blog type system (Space Grotesk headlines + Newsreader serif reading body) */
+  --font-headline:            var(--font-space-grotesk), 'Space Grotesk', system-ui, sans-serif;
+  --font-reading:             var(--font-newsreader), 'Newsreader', 'Georgia', serif;
 
   /* Fluid type scale — clamp(min, preferred, max)
      Calculated for 375px → 1024px viewport range.
