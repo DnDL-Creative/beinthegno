@@ -1,8 +1,11 @@
 /**
  * Blog post data fetcher.
- * Reads from Supabase `itg_posts` table (primary).
- * Content is stored as HTML strings (same as DNDL `posts` table).
- * Falls back to static data if DB is unreachable.
+ * Reads from Supabase `itg_posts` table. Content is stored as HTML strings.
+ * Only PUBLISHED rows are ever returned publicly — a successful-but-empty query
+ * (nothing published yet) returns an empty list, and a DB error returns empty
+ * too, so unpublished drafts NEVER leak onto the live blog or into the sitemap.
+ * Draft Mode (getPost, via "Save & Preview") bypasses the published filter with
+ * the service-role client so only the cookie-holder sees a draft.
  */
 
 import { draftMode } from "next/headers";
@@ -130,14 +133,13 @@ export async function getAllPosts(): Promise<BlogPost[]> {
       .order("date", { ascending: false });
 
     if (error) throw error;
-    if (data && data.length > 0) {
-      return data.map(rowToPost);
-    }
+    // Only PUBLISHED posts are ever public. A successful-but-empty result means
+    // nothing is published yet → show an empty blog, never placeholder drafts.
+    return (data ?? []).map(rowToPost);
   } catch (e) {
-    console.warn("[intheGno] Failed to fetch posts from DB, using static fallback:", e);
+    console.warn("[intheGno] Failed to fetch posts from DB:", e);
+    return [];
   }
-
-  return Object.values(STATIC_POSTS);
 }
 
 export async function getPost(slug: string): Promise<BlogPost | undefined> {
@@ -162,12 +164,11 @@ export async function getPost(slug: string): Promise<BlogPost | undefined> {
     const { data, error } = await query.maybeSingle();
 
     if (error) throw error;
-    if (data) return rowToPost(data);
+    return data ? rowToPost(data) : undefined;
   } catch (e) {
-    console.warn("[intheGno] Failed to fetch post from DB, using static fallback:", e);
+    console.warn("[intheGno] Failed to fetch post from DB:", e);
+    return undefined;
   }
-
-  return STATIC_POSTS[slug];
 }
 
 export async function getAllSlugs(): Promise<string[]> {
@@ -183,85 +184,9 @@ export async function getAllSlugs(): Promise<string[]> {
       .eq("published", true);
 
     if (error) throw error;
-    if (data && data.length > 0) {
-      return data.map((r) => r.slug);
-    }
+    return (data ?? []).map((r) => r.slug);
   } catch (e) {
-    console.warn("[intheGno] Failed to fetch slugs from DB, using static fallback:", e);
+    console.warn("[intheGno] Failed to fetch slugs from DB:", e);
+    return [];
   }
-
-  return Object.keys(STATIC_POSTS);
 }
-
-/* ═══════════════════════════════════════════════════════════════════
-   Static fallback (abbreviated)
-   ═══════════════════════════════════════════════════════════════════ */
-
-const STATIC_POSTS: Record<string, BlogPost> = {
-  "new-age-grift": {
-    slug: "new-age-grift",
-    title: "new age grift",
-    subtitle: "when spirituality becomes a sales funnel",
-    date: "Apr 11, 2026",
-    tags: ["manipulation"],
-    readTime: "6 min read",
-    wordCount: 0,
-    blogcastTime: 0,
-    content: "<p>Content unavailable — please check database connection.</p>",
-  },
-  "truth-isnt-linear": {
-    slug: "truth-isnt-linear",
-    title: "truth isn't linear",
-    subtitle: "on the obsession with being right",
-    date: "Apr 18, 2026",
-    tags: ["NPCs"],
-    readTime: "8 min read",
-    wordCount: 0,
-    blogcastTime: 0,
-    content: "<p>Content unavailable — please check database connection.</p>",
-  },
-  "will-we-split-in-two": {
-    slug: "will-we-split-in-two",
-    title: "humanity has already split",
-    subtitle: "the torus, the pendulum, and the pattern",
-    date: "Apr 25, 2026",
-    tags: ["NPCs"],
-    readTime: "10 min read",
-    wordCount: 0,
-    blogcastTime: 0,
-    content: "<p>Content unavailable — please check database connection.</p>",
-  },
-  "what-is-freedom": {
-    slug: "what-is-freedom",
-    title: "what is freedom",
-    subtitle: "because it damn sure isn't what they told you",
-    date: "May 2, 2026",
-    tags: ["sovereignty"],
-    readTime: "7 min read",
-    wordCount: 0,
-    blogcastTime: 0,
-    content: "<p>Content unavailable — please check database connection.</p>",
-  },
-  "how-theyre-cooking-us": {
-    slug: "how-theyre-cooking-us",
-    title: "how they're cooking us",
-    subtitle: "food, frequencies, and the slow kill",
-    date: "May 9, 2026",
-    tags: ["vessel"],
-    readTime: "9 min read",
-    wordCount: 0,
-    blogcastTime: 0,
-    content: "<p>Content unavailable — please check database connection.</p>",
-  },
-  "violence-is-never-the-answer": {
-    slug: "violence-is-never-the-answer",
-    title: "\"violence is not the answer\"",
-    subtitle: "said the people who bomb countries for oil",
-    date: "May 16, 2026",
-    tags: ["hypocrisy"],
-    readTime: "8 min read",
-    wordCount: 0,
-    blogcastTime: 0,
-    content: "<p>Content unavailable — please check database connection.</p>",
-  },
-};

@@ -44,6 +44,16 @@ export default function BlogGrid({ posts }: { posts: BlogPost[] }) {
     });
   }, [posts, sort, activeTag]);
 
+  // Nothing published yet → a calm empty state instead of bare sort controls
+  // over an empty grid. Drafts live in VibeWriter until published.
+  if (posts.length === 0) {
+    return (
+      <p className={styles.emptyState}>
+        no observations yet. the signal is still forming.
+      </p>
+    );
+  }
+
   return (
     <>
       <div className={styles.controls}>

@@ -143,6 +143,19 @@
   cursor: pointer;
 }
 
+/* ── EMPTY STATE (nothing published yet) ─────────────────────────── */
+.emptyState {
+  font-family: var(--font-body);
+  font-size: var(--text-base);
+  font-style: italic;
+  text-transform: lowercase;
+  letter-spacing: 0.01em;
+  color: var(--tagline-color, var(--muted));
+  opacity: 0.75;
+  text-align: center;
+  padding: var(--space-16) var(--space-4);
+}
+
 /* ── CARD ────────────────────────────────────────────────────────── */
 
 .cardLink {
