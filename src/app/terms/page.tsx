@@ -54,9 +54,9 @@ export default function TermsPage() {
             transparent about that. Do your own research.
           </p>
           <p>
-            When the physical line is live, checkout for physical goods is
-            handled through Shopify, and apparel is printed and fulfilled by
-            Printful. Shipping, returns, and delivery times are covered on our{" "}
+            Checkout runs through Stripe for everything we sell. When the
+            physical line is live, apparel is printed and fulfilled by
+            Printify. Shipping, returns, and delivery times are covered on our{" "}
             <Link href="/shipping">shipping &amp; returns</Link> page.
           </p>
         </section>
@@ -111,8 +111,8 @@ export default function TermsPage() {
         <section className={styles.section}>
           <h2 className={styles.sectionTitle}>Payments</h2>
           <p>
-            Digital purchases are processed securely through Stripe, and physical
-            checkout runs through Shopify. We never store your full card details.
+            All purchases, digital and physical, are processed securely through
+            Stripe. We never store your full card details.
             For billing inquiries and broader financial terms, refer to{" "}
             <a href="https://dndlcreative.com" target="_blank" rel="noopener noreferrer">
               dndlcreative.com

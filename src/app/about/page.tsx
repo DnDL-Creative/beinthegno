@@ -35,7 +35,11 @@ export default function AboutPage() {
             Everyone&apos;s screaming past each other. Left vs. right, atheist
             vs. Christian, science vs. New Age. And nobody&apos;s asking why
             every answer is a binary. As above, so below.{" "}
-            <Link href="/blog/truth-isnt-linear" className={styles.inlineLink}>
+            {/* Was hard-linked to /blog/truth-isnt-linear, which is unpublished
+                and therefore 404s. Pointed at the Observations index so this
+                page stays fully static (no DB read on /about). Repoint it at
+                the post once it is published. */}
+            <Link href="/blog" className={styles.inlineLink}>
               Truth isn&apos;t absolute.
             </Link>
           </p>

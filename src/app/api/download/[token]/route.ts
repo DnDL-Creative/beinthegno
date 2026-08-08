@@ -28,8 +28,26 @@ export async function GET(
         { status: 404 }
       );
     }
-    const url = await presignDownload(resolved.r2Key, resolved.fileName);
-    return NextResponse.redirect(url, 302);
+    // presignDownload throws when R2 env keys are missing — catch it so a
+    // paying customer gets a readable message instead of an opaque 500.
+    // The download_count was already bumped by resolveOrderAsset, so the
+    // failure is logged loudly for manual follow-up.
+    try {
+      const url = await presignDownload(resolved.r2Key, resolved.fileName);
+      return NextResponse.redirect(url, 302);
+    } catch (e) {
+      console.error(
+        `[intheGno] Presign failed for token ${token} asset ${assetId}:`,
+        e
+      );
+      return NextResponse.json(
+        {
+          error:
+            "We couldn't generate your download link. Your purchase is safe — please contact us and we'll send the files.",
+        },
+        { status: 503 }
+      );
+    }
   }
 
   const fulfilled = await getFulfilledOrder(token);

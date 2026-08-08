@@ -1,7 +1,7 @@
 import type { Metadata } from "next";
 import { notFound } from "next/navigation";
-import { getCollections, getCollectionWithProducts } from "@/lib/catalog";
-import { ProductCard, MadeToOrder } from "@/components/shop";
+import { getCollections, getCollectionWithProducts, slugMatches } from "@/lib/catalog";
+import { ProductCard, MadeToOrder, TrilogyGrid } from "@/components/shop";
 import { PipeFrame } from "@/components/ui/PipeFrame/PipeFrame";
 import comingSoon from "../coming-soon.module.css";
 import styles from "./page.module.css";
@@ -78,11 +78,17 @@ export default async function CollectionPage({ params }: { params: Params }) {
         <MadeToOrder collectionSlug={collection.slug} align="inherit" className={styles.madeToOrderHeader} />
       </header>
 
-      <div className={styles.grid}>
-        {products.map((product) => (
-          <ProductCard key={product.id} product={product} />
-        ))}
-      </div>
+      {/* Innerwork gets the Trilogy layout (bundle hero + 3 books);
+          every other collection keeps the generic product grid. */}
+      {slugMatches("innerwork", collection.slug) ? (
+        <TrilogyGrid products={products} />
+      ) : (
+        <div className={styles.grid}>
+          {products.map((product) => (
+            <ProductCard key={product.id} product={product} />
+          ))}
+        </div>
+      )}
     </main>
   );
 }

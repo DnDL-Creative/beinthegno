@@ -53,3 +53,14 @@ export const REVALIDATE_CODEX = 3600;
 
 /** Default ISR revalidation for collections (15 minutes). */
 export const REVALIDATE_COLLECTIONS = 900;
+
+/* ── SHIPPING ────────────────────────────────────────────────────── */
+
+/**
+ * Order subtotal (USD) at which physical shipping becomes free.
+ * SINGLE SOURCE OF TRUTH: used by the checkout route to zero the shipping
+ * rate AND by the product page copy, so the promise on the page and the
+ * amount charged can never drift apart again. Set to null to remove the
+ * offer entirely (the product page line disappears with it).
+ */
+export const FREE_SHIPPING_THRESHOLD: number | null = 75;

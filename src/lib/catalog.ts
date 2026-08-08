@@ -29,6 +29,38 @@ import { publicUrl } from "./r2";
 import { isStripeConfigured } from "./stripe";
 
 export const CATALOG_TAG = "itg-catalog";
+
+/* ── SLUG ALIASES ─────────────────────────────────────────────────────
+   A collection renamed in code can outrun the DB migration (code deploys
+   in seconds, a pasted SQL migration lands whenever Daniel runs it). That
+   gap took the whole store dark once: the code asked for 'innerwork'
+   while the row still said 'healing', so every product 404'd.
+
+   Aliases make lookups tolerant in BOTH directions, so either state
+   renders. Keep an entry until the DB rename is confirmed live; removing
+   it afterwards is optional and harmless.                              */
+const SLUG_ALIASES: Record<string, string[]> = {
+  innerwork: ["innerwork", "healing"],
+  healing: ["innerwork", "healing"],
+};
+
+/** Every slug a request for `slug` should match, most-preferred first. */
+function slugCandidates(slug: string): string[] {
+  return SLUG_ALIASES[slug] ?? [slug];
+}
+
+/**
+ * Does a URL segment refer to the same collection as `actual`? Use this
+ * instead of `===` when validating that a product belongs to the
+ * collection in the URL, or a rename gap 404s the product.
+ */
+export function slugMatches(
+  urlSlug: string,
+  actual: string | undefined
+): boolean {
+  if (!actual) return false;
+  return slugCandidates(urlSlug).includes(actual);
+}
 const CATALOG_REVALIDATE = 300;
 
 /** Server-side read client: service role if present, anon otherwise. */
@@ -176,13 +208,16 @@ export const getCollectionWithProducts = unstable_cache(
   ): Promise<{ collection: CatalogCollection; products: CatalogProduct[] } | null> => {
     try {
       const db = getReadClient();
-      const { data: col, error: colErr } = await db
+      // Accept the renamed slug OR its alias, so a code/DB rename gap can't
+      // take the collection dark (see SLUG_ALIASES).
+      const { data: cols, error: colErr } = await db
         .from("itg_collections")
         .select("*")
-        .eq("slug", slug)
+        .in("slug", slugCandidates(slug))
         .eq("published", true)
-        .maybeSingle();
+        .limit(1);
       if (colErr) throw colErr;
+      const col = cols?.[0];
       if (!col) return null;
 
       const { data: prods, error: prodErr } = await db
@@ -244,15 +279,18 @@ export const getProductByHandle = unstable_cache(
 /**
  * Can this product be bought right now? Everything checks out through
  * Stripe; physical goods fulfill via Printify after payment.
- * - digital → needs at least one deliverable file
- * - any     → needs Stripe env keys
+ * - digital/bundle → needs at least one deliverable file (a bundle with no
+ *   files would take money and deliver NOTHING — fail closed)
+ * - any → needs Stripe env keys
  */
 export function getPurchasability(product: CatalogProduct): Purchasability {
   if (product.status !== "active") {
     return { canBuy: false, reason: "archived" };
   }
 
-  if (product.productType === "digital" && product.deliverableCount === 0) {
+  const deliversFiles =
+    product.productType === "digital" || product.productType === "bundle";
+  if (deliversFiles && product.deliverableCount === 0) {
     return { canBuy: false, reason: "no-files" };
   }
 

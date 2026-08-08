@@ -103,9 +103,14 @@ export default function BlogFaq({ items }: { items: FAQItem[] }) {
         padding: "0 1.5rem",
       }}
     >
+      {/* Escape `<` as < so FAQ text containing "</script>" cannot
+          break out of this block and inject markup. JSON treats < as
+          an ordinary "<", so consumers parse it identically. */}
       <script
         type="application/ld+json"
-        dangerouslySetInnerHTML={{ __html: JSON.stringify(jsonLd) }}
+        dangerouslySetInnerHTML={{
+          __html: JSON.stringify(jsonLd).replace(/</g, "\\u003c"),
+        }}
       />
       {items.map((item, index) => {
         const isOpen = openIndex === index;

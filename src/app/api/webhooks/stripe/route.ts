@@ -37,8 +37,21 @@ export async function POST(request: Request) {
 
   if (event.type === "checkout.session.completed") {
     const session = event.data.object as Stripe.Checkout.Session;
-    const order = await markOrderPaidFromSession(session);
-    if (order) await fulfillPaidOrder(order.id, session);
+    try {
+      const order = await markOrderPaidFromSession(session);
+      // Only fulfill on the FIRST transition to paid. Stripe redelivers
+      // webhooks, and fulfillPaidOrder submits (and pays for) a Printify
+      // order — running it twice would ship and bill the item twice.
+      if (order && !order.alreadyPaid) {
+        await fulfillPaidOrder(order.id, session);
+      }
+    } catch (err) {
+      // A transient DB failure must NOT be acked. Returning 500 makes
+      // Stripe retry with backoff instead of marking the event delivered
+      // and stranding a paid order as `pending` forever.
+      console.error("[intheGno] Stripe webhook processing failed:", err);
+      return NextResponse.json({ error: "Processing failed" }, { status: 500 });
+    }
   }
 
   return NextResponse.json({ received: true });

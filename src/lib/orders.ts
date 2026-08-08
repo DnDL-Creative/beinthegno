@@ -40,24 +40,49 @@ export type FulfilledOrder = {
  * Mark the order behind a Stripe Checkout Session as paid.
  * Idempotent — safe to call from both the webhook and the success
  * page (whichever runs first wins, the other is a no-op).
+ *
+ * Returns the order plus `alreadyPaid`, so callers can tell a FIRST
+ * transition to paid from a repeat call. Stripe retries/redelivers
+ * webhooks, and side effects that cost money (Printify submission) must
+ * only run on the first transition.
+ *
+ * Throws on a DB failure so the webhook can return a non-2xx and let
+ * Stripe retry. A missing order row returns null (retrying won't help).
  */
 export async function markOrderPaidFromSession(
   session: Stripe.Checkout.Session
-): Promise<ItgOrderRow | null> {
+): Promise<(ItgOrderRow & { alreadyPaid: boolean }) | null> {
   if (session.payment_status !== "paid") return null;
 
   const db = createSupabaseAdminClient();
-  const { data: existing } = await db
+  // Look up by session id, falling back to the order id we stamped into
+  // metadata at checkout — covers the case where binding the real session
+  // id to the row failed and it is still `pending_<uuid>`.
+  const metadataOrderId =
+    typeof session.metadata?.itg_order_id === "string"
+      ? session.metadata.itg_order_id
+      : null;
+
+  let { data: existing } = await db
     .from("itg_orders")
     .select("*")
     .eq("stripe_session_id", session.id)
     .maybeSingle<ItgOrderRow>();
 
+  if (!existing && metadataOrderId) {
+    const { data: byId } = await db
+      .from("itg_orders")
+      .select("*")
+      .eq("id", metadataOrderId)
+      .maybeSingle<ItgOrderRow>();
+    existing = byId ?? null;
+  }
+
   if (!existing) {
     console.warn(`[intheGno] No order row for Stripe session ${session.id}`);
     return null;
   }
-  if (existing.status === "paid") return existing;
+  if (existing.status === "paid") return { ...existing, alreadyPaid: true };
 
   const expires = new Date();
   expires.setDate(expires.getDate() + DOWNLOAD_WINDOW_DAYS);
@@ -72,17 +97,24 @@ export async function markOrderPaidFromSession(
           ? session.payment_intent
           : session.payment_intent?.id ?? "",
       amount_total: (session.amount_total ?? 0) / 100,
+      // Keep the row bound to the real session id even if the checkout-side
+      // binding update failed (row would otherwise stay `pending_<uuid>`).
+      stripe_session_id: session.id,
       expires_at: expires.toISOString(),
     })
     .eq("id", existing.id)
     .select("*")
     .single<ItgOrderRow>();
 
-  if (error) {
+  // THROW, don't swallow: the caller (webhook) must fail loudly so Stripe
+  // retries. Returning null here silently stranded paid orders as pending.
+  if (error || !updated) {
     console.error("[intheGno] Failed to mark order paid:", error);
-    return null;
+    throw new Error(
+      `Failed to mark order ${existing.id} paid: ${error?.message ?? "no row returned"}`
+    );
   }
-  return updated;
+  return { ...updated, alreadyPaid: false };
 }
 
 /**

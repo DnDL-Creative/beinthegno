@@ -334,3 +334,38 @@
     font-size: var(--text-xl);
   }
 }
+
+/* ── INNERWORK EXTRAS (trilogy pages) ───────────────────────── */
+
+.crossSell {
+  display: inline-block;
+  margin-top: var(--space-3);
+  font-family: var(--font-body);
+  font-size: var(--text-sm);
+  letter-spacing: 0.02em;
+  text-transform: lowercase;
+  color: var(--color-copper-dark);
+  text-decoration: none;
+}
+
+.crossSell:hover {
+  text-decoration: underline;
+}
+
+.credit {
+  margin-top: var(--space-5);
+  font-family: var(--font-body);
+  font-size: var(--text-xs);
+  letter-spacing: 0.02em;
+  color: var(--foreground);
+  opacity: 0.6;
+}
+
+.disclaimer {
+  margin-top: var(--space-1, 0.25rem);
+  font-family: var(--font-body);
+  font-size: var(--text-xs);
+  font-style: italic;
+  color: var(--foreground);
+  opacity: 0.5;
+}

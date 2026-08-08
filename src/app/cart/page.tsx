@@ -27,7 +27,7 @@ export default async function CartPage() {
             inthe<span className={comingSoon.accent}>Gno</span> Cart
           </h1>
           <p className={comingSoon.message}>nothing in the vessel yet.</p>
-          <PipeButton href="/healing">browse heal &amp; succeed</PipeButton>
+          <PipeButton href="/innerwork">browse innerwork</PipeButton>
         </div>
       </main>
     );

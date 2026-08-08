@@ -71,14 +71,11 @@ export default function PrivacyPage() {
               newsletter signups live.
             </li>
             <li>
-              <strong>Stripe</strong> — payments for digital products.
+              <strong>Stripe</strong> — checkout and payments for everything we
+              sell, digital and physical.
             </li>
             <li>
-              <strong>Shopify</strong> — checkout for physical goods, once the
-              physical line is live.
-            </li>
-            <li>
-              <strong>Printful</strong> — printing and fulfillment of apparel,
+              <strong>Printify</strong> — printing and fulfillment of apparel,
               once that line is live.
             </li>
             <li>

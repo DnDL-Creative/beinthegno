@@ -15,7 +15,7 @@ const FALLBACK_LINKS: Array<{ slug: string; navLabel: string }> = [
   { slug: "apparel", navLabel: "apparel" },
   { slug: "orgone", navLabel: "orgone" },
   { slug: "anti-emf", navLabel: "anti-emf" },
-  { slug: "healing", navLabel: "Heal & Succeed" },
+  { slug: "innerwork", navLabel: "Innerwork" },
 ];
 
 export async function SiteNav() {

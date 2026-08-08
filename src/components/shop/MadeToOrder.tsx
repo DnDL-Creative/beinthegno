@@ -7,7 +7,9 @@ import styles from "./MadeToOrder.module.css";
    US & Italy. SVG flags (no emoji). Drop anywhere a slug is known.
    ═══════════════════════════════════════════════════════════════════ */
 
-const MADE_TO_ORDER = new Set(["copper", "orgone", "healing"]);
+// "healing" is the pre-rename slug — kept so the line survives the DB
+// migration gap (see SLUG_ALIASES in lib/catalog.ts).
+const MADE_TO_ORDER = new Set(["copper", "orgone", "innerwork", "healing"]);
 
 /** Simplified Stars & Stripes — 13 stripes, canton, star field. */
 function UsFlag() {
@@ -81,8 +83,8 @@ export function MadeToOrder({
         ? styles.alignCenter
         : undefined;
 
-  // Digital (healing) — written by a human, recorded in pro studios.
-  if (collectionSlug === "healing") {
+  // Digital (innerwork) — written by a human, recorded in pro studios.
+  if (collectionSlug === "innerwork" || collectionSlug === "healing") {
     return (
       <p className={cn(styles.madeToOrder, alignClass, className)}>
         written &amp; recorded by humans in{" "}

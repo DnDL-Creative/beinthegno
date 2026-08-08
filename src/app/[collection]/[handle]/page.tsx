@@ -4,10 +4,11 @@ import Link from "next/link";
 import { notFound } from "next/navigation";
 import { ArrowLeft } from "lucide-react";
 import parse from "html-react-parser";
-import { getProductByHandle, getPurchasability } from "@/lib/catalog";
-import { ProductPurchase, MadeToOrder } from "@/components/shop";
+import { getProductByHandle, getPurchasability, slugMatches } from "@/lib/catalog";
+import { ProductPurchase, MadeToOrder, FreeSessionCapture } from "@/components/shop";
 import { PipeFrame } from "@/components/ui/PipeFrame/PipeFrame";
 import { formatPrice } from "@/utils/formatPrice";
+import { FREE_SHIPPING_THRESHOLD } from "@/lib/constants";
 import styles from "./page.module.css";
 
 /* ═══════════════════════════════════════════════════════════════════
@@ -42,13 +43,18 @@ export default async function ProductPage({ params }: { params: Params }) {
   const { collection, handle } = await params;
   const product = await getProductByHandle(handle);
 
-  if (!product || product.collectionSlug !== collection) notFound();
+  if (!product || !slugMatches(collection, product.collectionSlug)) notFound();
 
   const purchasability = getPurchasability(product);
   const images = product.images;
   const main = images[0];
   const note = priceNote(product.metadata);
   const isPhysical = product.productType === "physical" || product.requiresShipping;
+
+  // Innerwork (the Sovereign Trilogy) carries publication credits, a
+  // practice disclaimer, a free-session capture, and a bundle cross-sell.
+  const isInnerwork = slugMatches("innerwork", product.collectionSlug);
+  const isBundle = product.productType === "bundle";
 
   return (
     <main className={styles.main}>
@@ -174,10 +180,35 @@ export default async function ProductPage({ params }: { params: Params }) {
 
           <ProductPurchase product={product} purchasability={purchasability} />
 
+          {/* ── INNERWORK EXTRAS ──────────────────────────── */}
+          {isInnerwork && !isBundle && (
+            <Link href="/innerwork/sovereign-trilogy" className={styles.crossSell}>
+              Or get all three &rarr;
+            </Link>
+          )}
+
+          {isInnerwork && <FreeSessionCapture handle={product.handle} />}
+
+          {isInnerwork && (
+            <>
+              <p className={styles.credit}>
+                An intheGno Innerwork Publication &middot; Audiobook produced by CineSonic
+                Productions
+              </p>
+              <p className={styles.disclaimer}>
+                A practice, not therapy or medical care.
+              </p>
+            </>
+          )}
+
           <MadeToOrder collectionSlug={product.collectionSlug} className={styles.madeToOrder} />
 
-          {isPhysical && (
-            <p className={styles.shipping}>Free shipping on orders over $75</p>
+          {/* Derived from the SAME constant the checkout route charges from,
+              so the promise and the amount billed can't drift apart. */}
+          {isPhysical && FREE_SHIPPING_THRESHOLD !== null && (
+            <p className={styles.shipping}>
+              Free shipping on orders over ${FREE_SHIPPING_THRESHOLD}
+            </p>
           )}
         </div>
       </article>

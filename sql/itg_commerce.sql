@@ -375,6 +375,18 @@ values
    false, 1,
    '{"price_note": "8 modules + optional monroe gateway"}'),
 
+  ('spontaneity-within-chaos',
+   (select id from public.itg_collections where slug = 'healing'),
+   'Spontaneity Within Chaos',
+   'the give and take of stable spontaneity',
+   '<p>Too much rigidity makes you a passionless normie who is in bed at ten and checking emails at six. One day you come to, and admit to yourself just how much you have fallen in line like everybody else. On the other hand, chaos without boundaries never builds anything real. It all stays &ldquo;I have this amazing idea,&rdquo; said ad nauseam, only to go nowhere. Good intentions, but all talk and no walk. Because to build something creative you need systems and repetition to get the thing done and noticed. The Sigma Bros sell you too much rigidity. The New Age Gurus sell you too much airy fairy. The truth is... you need both.</p><p>The life that actually works is a hard frame with deliberate holes cut in it. You go to bed on time every night, and a couple of nights you stay out exploring until 5 a.m. You schedule your content to feed the algorithmic beast, and you keep room for the truly inspired post that arrives unannounced and jumps the queue. You find a place to rest and you build the nest, and you refuse to stay in it forever.</p><p>Six modules for building that frame and defending the gaps in it. Hill''s discipline for the scaffold, Zeland''s flow for what arrives unplanned, and Jung''s tension of opposites for the part nobody teaches: how to hold both without letting one swallow the other. This is the give and take of stable spontaneity.</p>',
+   'digital', 'active', 'new course',
+   97.00, null,
+   '[]',
+   '["6 modules: the two ways to lose, the left-brain scaffold, the sacred 5 a.m., feeding the beast, the nest and the leaving, integration", "6 guided practice sessions (20-30 min) + 6 PDF field manuals", "the weekly frame: anchor hours, release valves, and the nights you let run", "the content rhythm - scheduled feed vs the inspired post that jumps the queue", "the nest audit: knowing when rest has quietly become hiding", "Hill''s discipline x Zeland''s flow x Jung''s tension of opposites", "optional expanding calendar module - run the same frame at week, month and quarter scale", "yours to keep, forever"]',
+   false, 3,
+   '{"price_note": "standalone - or +$47 with The Sovereign Architect"}'),
+
   ('sovereign-mirror-collection',
    (select id from public.itg_collections where slug = 'healing'),
    'The Sovereign Mirror: Complete Collection',
